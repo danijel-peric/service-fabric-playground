@@ -7,6 +7,7 @@ using AppShared;
 using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Client;
 using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace CommunicatorApp
@@ -40,7 +41,9 @@ namespace CommunicatorApp
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var service = ServiceProxy.Create<IGatewayService>(new Uri("fabric:/TestApp/GatewayService"), new ServicePartitionKey(0));
+                var proxyFactory = new ServiceProxyFactory(c => new FabricTransportServiceRemotingClientFactory());
+
+                var service = proxyFactory.CreateServiceProxy<IGatewayService>(new Uri("fabric:/TestApp/GatewayService"), new ServicePartitionKey(0));
 
                 var message = await service.GetMessage();
 
